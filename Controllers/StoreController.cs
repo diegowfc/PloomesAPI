@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.Features;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using StoreAPI.Data;
 using StoreAPI.Model;
@@ -50,8 +51,9 @@ namespace StoreAPI.Controllers
             }
             catch
             {
-                return BadRequest();
+                return BadRequest("Erro ao salvar o novo item. Por favor, tente novamente mais tarde.");
             }
+
         }
 
         [HttpPut("{id}")]
@@ -62,7 +64,7 @@ namespace StoreAPI.Controllers
                 var targetItem = context.Itens.FirstOrDefault(i => i.Id == id);
 
                 if (targetItem == null)
-                    return NotFound();
+                    return NotFound("Item não encontrado.");
 
                 if (!ValidateItem(item))
                     return BadRequest("Falha na atualização. Verifique as informações inseridas.");
@@ -78,7 +80,7 @@ namespace StoreAPI.Controllers
             }
             catch
             {
-                return BadRequest();
+                return BadRequest("Erro ao atualizar o item. Tente novamente mais tarde.");
             }
         }
 
@@ -91,7 +93,7 @@ namespace StoreAPI.Controllers
                 var targetItem = context.Itens.FirstOrDefault(i => i.Id == id);
 
                 if (targetItem == null)
-                    return NotFound();
+                    return NotFound("Item não encontrado.");
 
                 if (amount < 0)
                     return BadRequest("O estoque não pode ser menor que 0.");
@@ -103,7 +105,7 @@ namespace StoreAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Error updating inventory amount.", error = ex.Message });
+                return BadRequest(new { message = "Erro ao atualizar o invetário. Tente novamente mais tarde.", error = ex.Message });
             }
         }
 
@@ -115,7 +117,7 @@ namespace StoreAPI.Controllers
                 var targetItem = context.Itens.FirstOrDefault(i => i.Id == id);
 
                 if (targetItem == null)
-                    return NotFound();
+                    return NotFound("Item não encontrado.");
 
                 context.Itens.Remove(targetItem);
                 context.SaveChanges();
@@ -124,12 +126,12 @@ namespace StoreAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Error deleting item.", error = ex.Message });
+                return BadRequest(new { message = "Erro ao deletar item.", error = ex.Message });
             }
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Item>> GetItems(int? page = null, int pageSize = 20)
+        public ActionResult<IEnumerable<Item>> GetItems(int? page = null, int pageSize = 5)
         {
             try
             {
@@ -154,12 +156,6 @@ namespace StoreAPI.Controllers
             }
         }
 
-
-
-
-
-
-
         [HttpGet("{id}")]
         public ActionResult<Item> GetItemById(int id)
         {
@@ -169,7 +165,7 @@ namespace StoreAPI.Controllers
 
                 if (item == null)
                 {
-                    return NotFound(); 
+                    return NotFound("Item não encontrado."); 
                 }
 
                 return Ok(item); 

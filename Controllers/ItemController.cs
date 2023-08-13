@@ -20,6 +20,11 @@ namespace StoreAPI.Controllers
             this.context = context;
         }
 
+        /// <summary>
+        /// Valida as informações que o usuário forneceu para inserir um novo item
+        /// </summary>
+        /// <param name="item">Objeto do tipo item</param>
+        /// <returns>Retorna true se estiver dentro das validãções e false caso não esteja</returns>
         private bool ValidateItem(Item item)
         {
             if (item == null)
@@ -34,6 +39,11 @@ namespace StoreAPI.Controllers
             return true;
         }
 
+        /// <summary>
+        /// Método para registrar um item novo no sistema.
+        /// </summary>
+        /// <param name="item">Objeto do tipo ITEM</param>
+        /// <returns>Código 200 em caso de sucesso e bad request em caso de erro</returns>
         [HttpPost]
         [Authorize(Roles = "administrador")]
         public ActionResult SaveNewItem([FromBody] Item item)
@@ -45,7 +55,7 @@ namespace StoreAPI.Controllers
 
                 context.Itens.Add(item);
                 context.SaveChanges();
-                return Ok();
+                return Ok("Item cadastrado com sucesso.");
             }
             catch
             {
@@ -53,6 +63,12 @@ namespace StoreAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Método que atualiza todas as informações de um item.
+        /// </summary>
+        /// <param name="id">ID do item alvo</param>
+        /// <param name="item">Objeto do tipo ITEM com as informações novas.</param>
+        /// <returns>Retorna um código 200 em caso de sucesso e bad request em caso de erro</returns>
         [HttpPut("{id}")]
         [Authorize(Roles = "administrador")]
         public ActionResult UpdateItem(int id, [FromBody] Item item)
@@ -74,7 +90,7 @@ namespace StoreAPI.Controllers
                 targetItem.DateOfInsert = item.DateOfInsert;
 
                 context.SaveChanges();
-                return Ok();
+                return Ok("Item atualizado com sucesso.");
             }
             catch
             {
@@ -82,8 +98,13 @@ namespace StoreAPI.Controllers
             }
         }
 
-
-        [HttpPatch("{id}/AtualizaInvetario/{amount}")]
+        /// <summary>
+        /// Método que atualiza apenas o número do estoque de determinado item.
+        /// </summary>
+        /// <param name="id">ID do item alvo</param>
+        /// <param name="amount">Valor do qual a quantidade será atualizada</param>
+        /// <returns>Código 200 em caso de sucesso e bad request em caso de erro</returns>
+        [HttpPatch("{id}/AtualizaInventario/{amount}")]
         [Authorize(Roles = "administrador")]
         public ActionResult UpdateInventoryAmount(int id, int amount)
         {
@@ -100,7 +121,7 @@ namespace StoreAPI.Controllers
                 targetItem.InventoryAmount = amount;
 
                 context.SaveChanges();
-                return Ok();
+                return Ok("Número em estoque atualizado com sucesso.");
             }
             catch (Exception ex)
             {
@@ -108,6 +129,11 @@ namespace StoreAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Método para deletar um item
+        /// </summary>
+        /// <param name="id">ID do item que será deletado</param>
+        /// <returns>Código 200 em caso de sucesso e bad request em caso de erro</returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "administrador")]
         public ActionResult DeleteItem(int id)
@@ -122,7 +148,7 @@ namespace StoreAPI.Controllers
                 context.Itens.Remove(targetItem);
                 context.SaveChanges();
 
-                return NoContent();
+                return Ok("Item removido.");
             }
             catch (Exception ex)
             {
@@ -130,6 +156,12 @@ namespace StoreAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Método que retorna uma coleção de items salvos no banco.
+        /// </summary>
+        /// <param name="page">Número da página</param>
+        /// <param name="pageSize">Numero de itens retornados por página</param>
+        /// <returns>Retorna uma coleção de itens ou uma mensagem de erro.</returns>
         [HttpGet]
         [Authorize]
         public ActionResult<IEnumerable<Item>> GetItems(int? page = null, int pageSize = 5)
@@ -157,6 +189,11 @@ namespace StoreAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Método que retorna as informações de um item específico
+        /// </summary>
+        /// <param name="id">ID do item</param>
+        /// <returns>Returna um código 200 de confirmação, além de retornar também as informações do item específico. Ou uma mensagem de erro em caso de falha.</returns>
         [HttpGet("{id}")]
         [Authorize]
         public ActionResult<Item> GetItemById(int id)

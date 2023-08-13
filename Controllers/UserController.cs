@@ -24,7 +24,11 @@ namespace PloomesAPI.Controllers
             this.configuration = configuration;
         }
 
-
+        /// <summary>
+        /// Valida as informações de cadastro.
+        /// </summary>
+        /// <param name="user">Objeto do tipo USER.</param>
+        /// <returns>Retorna true se as informações forem válidas e false caso não seja</returns>
         private bool ValidateUser(User user)
         {
             if (user == null)
@@ -36,6 +40,10 @@ namespace PloomesAPI.Controllers
             return true;
         }
 
+        /// <summary>
+        /// Método que gera um salt para incrementar o hash da senha.
+        /// </summary>
+        /// <returns>Retorna o valor do salt em bytes</returns>
         private byte[] GenerateSalt()
         {
             using (var rng = RandomNumberGenerator.Create())
@@ -46,6 +54,12 @@ namespace PloomesAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Método que combina o hash gerado para a senha com o salt criado anteriormente.
+        /// </summary>
+        /// <param name="password">Senha criada pelo usuário</param>
+        /// <param name="salt">Salt gerado aleatoriamente pelo sistema</param>
+        /// <returns>Retorna um hash de senha 256</returns>
         private byte[] HashPasswordWithSalt(string password, byte[] salt)
         {
             using (var sha256 = SHA256.Create())
@@ -58,6 +72,10 @@ namespace PloomesAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Retorna uma coleção de usuários do sistema.
+        /// </summary>
+        /// <returns>Retorna um código de confirmação 200 em caso de sucesso e bad request em caso de erro</returns>
         [HttpGet]
         [Authorize(Roles = "administrador")]
         public ActionResult<IEnumerable<User>> GetUsers()
@@ -74,7 +92,11 @@ namespace PloomesAPI.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Método para registrar um novo usuário no sistema
+        /// </summary>
+        /// <param name="user">Objeto do tipo usuário com as informações fornecidas</param>
+        /// <returns>Retorna 200 em caso de sucesso e bad request em caso de erro</returns>
         [HttpPost]
         public ActionResult RegisterUser([FromBody] User user)
         {
@@ -93,7 +115,7 @@ namespace PloomesAPI.Controllers
 
                 context.Users.Add(user);
                 context.SaveChanges();
-                return Ok();
+                return Ok("Usuário cadastrado com sucesso");
             }
             catch
             {
@@ -101,6 +123,11 @@ namespace PloomesAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Método para realizar login no sistema
+        /// </summary>
+        /// <param name="userLogin">Objeto do tipo USER</param>
+        /// <returns>Retorna um token para o usuário autenticar no sistema</returns>
         [HttpPost("login")]
         public ActionResult Login([FromBody] User userLogin)
         {

@@ -10,12 +10,12 @@ namespace StoreAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class StoreController : ControllerBase
+    public class ItemController : ControllerBase
     {
 
         private readonly DataContext context;
 
-        public StoreController(DataContext context)
+        public ItemController(DataContext context)
         {
             this.context = context;
         }
@@ -25,10 +25,7 @@ namespace StoreAPI.Controllers
             if (item == null)
                 return false;
 
-            if (string.IsNullOrWhiteSpace(item.Name))
-                return false;
-
-            if (string.IsNullOrWhiteSpace(item.Type))
+            if (string.IsNullOrWhiteSpace(item.Name) || string.IsNullOrWhiteSpace(item.Type))
                 return false;
 
             if (item.Value <= 0)
@@ -38,6 +35,7 @@ namespace StoreAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "administrador")]
         public ActionResult SaveNewItem([FromBody] Item item)
         {
             try
@@ -53,10 +51,10 @@ namespace StoreAPI.Controllers
             {
                 return BadRequest("Erro ao salvar o novo item. Por favor, tente novamente mais tarde.");
             }
-
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "administrador")]
         public ActionResult UpdateItem(int id, [FromBody] Item item)
         {
             try
@@ -85,7 +83,8 @@ namespace StoreAPI.Controllers
         }
 
 
-        [HttpPatch("{id}/UpdateInventory/{amount}")]
+        [HttpPatch("{id}/AtualizaInvetario/{amount}")]
+        [Authorize(Roles = "administrador")]
         public ActionResult UpdateInventoryAmount(int id, int amount)
         {
             try
@@ -110,6 +109,7 @@ namespace StoreAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "administrador")]
         public ActionResult DeleteItem(int id)
         {
             try
@@ -131,6 +131,7 @@ namespace StoreAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<IEnumerable<Item>> GetItems(int? page = null, int pageSize = 5)
         {
             try
@@ -157,6 +158,7 @@ namespace StoreAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<Item> GetItemById(int id)
         {
             try

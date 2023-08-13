@@ -7,9 +7,10 @@ namespace StoreAPI.Data
     {
         public DataContext(DbContextOptions<DataContext> options): base(options)
         {
-
+            Database.EnsureCreated();
         }
 
         public DbSet<Item> Itens { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

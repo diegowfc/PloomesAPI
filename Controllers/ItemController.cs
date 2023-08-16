@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using PloomesAPI.Data.Dtos;
 using StoreAPI.Data;
 using StoreAPI.Model;
 using System.Linq;
@@ -14,10 +18,12 @@ namespace StoreAPI.Controllers
     {
 
         private readonly DataContext context;
+        private readonly IMapper mapper;
 
-        public ItemController(DataContext context)
+        public ItemController(DataContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
         /// <summary>
@@ -43,11 +49,14 @@ namespace StoreAPI.Controllers
         /// Método para registrar um item novo no sistema.
         /// </summary>
         /// <param name="item">Objeto do tipo ITEM</param>
-        /// <returns>Código 200 em caso de sucesso e bad request em caso de erro</returns>
+        /// <returns>ActionResult</returns>
+        /// <response code="201">Caso a inserção seja feito com sucesso</response>
         [HttpPost]
         [Authorize(Roles = "administrador")]
-        public ActionResult SaveNewItem([FromBody] Item item)
+        public ActionResult SaveNewItem([FromBody] CreateItemDTO itemDTO)
         {
+            Item item = mapper.Map<Item>(itemDTO);
+
             try
             {
                 if (!ValidateItem(item))
@@ -68,29 +77,25 @@ namespace StoreAPI.Controllers
         /// </summary>
         /// <param name="id">ID do item alvo</param>
         /// <param name="item">Objeto do tipo ITEM com as informações novas.</param>
-        /// <returns>Retorna um código 200 em caso de sucesso e bad request em caso de erro</returns>
+        /// <returns>ActionResult</returns>
+        ///<response code="204">Caso a atualização seja feita com sucesso</response>
         [HttpPut("{id}")]
         [Authorize(Roles = "administrador")]
-        public ActionResult UpdateItem(int id, [FromBody] Item item)
+        public ActionResult UpdateItem(int id, [FromBody] UpdateItemDTO itemDTO)
         {
             try
             {
                 var targetItem = context.Itens.FirstOrDefault(i => i.Id == id);
 
-                if (targetItem == null)
-                    return NotFound("Item não encontrado.");
+                if (targetItem == null) return NotFound("Item não encontrado.");
 
-                if (!ValidateItem(item))
+                mapper.Map(itemDTO, targetItem);
+
+                if (!ValidateItem(targetItem))
                     return BadRequest("Falha na atualização. Verifique as informações inseridas.");
 
-                targetItem.Name = item.Name;
-                targetItem.Description = item.Description;
-                targetItem.Type = item.Type;
-                targetItem.Value = item.Value;
-                targetItem.DateOfInsert = item.DateOfInsert;
-
                 context.SaveChanges();
-                return Ok("Item atualizado com sucesso.");
+                return NoContent();
             }
             catch
             {
@@ -103,29 +108,29 @@ namespace StoreAPI.Controllers
         /// </summary>
         /// <param name="id">ID do item alvo</param>
         /// <param name="amount">Valor do qual a quantidade será atualizada</param>
-        /// <returns>Código 200 em caso de sucesso e bad request em caso de erro</returns>
-        [HttpPatch("{id}/AtualizaInventario/{amount}")]
+        /// <returns>ActionResult</returns>
+        ///<response code="204">Caso a atualização seja feita com sucesso</response>
+        [HttpPatch("{id}")]
         [Authorize(Roles = "administrador")]
-        public ActionResult UpdateInventoryAmount(int id, int amount)
+        public ActionResult ParcialUpdate(int id, int amount, JsonPatchDocument<UpdateItemDTO> patch)
         {
             try
             {
                 var targetItem = context.Itens.FirstOrDefault(i => i.Id == id);
 
-                if (targetItem == null)
-                    return NotFound("Item não encontrado.");
+                var itemToUpdate = mapper.Map<UpdateItemDTO>(targetItem);
 
-                if (amount < 0)
-                    return BadRequest("O estoque não pode ser menor que 0.");
+                patch.ApplyTo(itemToUpdate, ModelState);
 
-                targetItem.InventoryAmount = amount;
+                if (!TryValidateModel(itemToUpdate)) return ValidationProblem(ModelState);
 
+                mapper.Map(itemToUpdate, targetItem);
                 context.SaveChanges();
-                return Ok("Número em estoque atualizado com sucesso.");
+                return NoContent();
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Erro ao atualizar o invetário. Tente novamente mais tarde.", error = ex.Message });
+                return BadRequest(new { message = "Erro ao atualizar o item. Tente novamente mais tarde.", error = ex.Message });
             }
         }
 
@@ -133,7 +138,8 @@ namespace StoreAPI.Controllers
         /// Método para deletar um item
         /// </summary>
         /// <param name="id">ID do item que será deletado</param>
-        /// <returns>Código 200 em caso de sucesso e bad request em caso de erro</returns>
+        /// <returns>ActionResult</returns>
+        /// <response code="204">Caso o delete seja feito com sucesso</response>
         [HttpDelete("{id}")]
         [Authorize(Roles = "administrador")]
         public ActionResult DeleteItem(int id)
@@ -148,7 +154,7 @@ namespace StoreAPI.Controllers
                 context.Itens.Remove(targetItem);
                 context.SaveChanges();
 
-                return Ok("Item removido.");
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -176,10 +182,10 @@ namespace StoreAPI.Controllers
 
                 int currentPage = page ?? 1;
 
-                var items = context.Itens
+                var items = mapper.Map<List<ReadItemDTO>>(context.Itens
                     .Skip((currentPage - 1) * pageSize)
                     .Take(pageSize)
-                    .ToList();
+                    .ToList());
 
                 return Ok(items);
             }
@@ -193,7 +199,7 @@ namespace StoreAPI.Controllers
         /// Método que retorna as informações de um item específico
         /// </summary>
         /// <param name="id">ID do item</param>
-        /// <returns>Returna um código 200 de confirmação, além de retornar também as informações do item específico. Ou uma mensagem de erro em caso de falha.</returns>
+        /// <returns>Retorna as informações do item específico ou uma mensagem de erro em caso de falha.</returns>
         [HttpGet("{id}")]
         [Authorize]
         public ActionResult<Item> GetItemById(int id)
@@ -202,12 +208,9 @@ namespace StoreAPI.Controllers
             {
                 var item = context.Itens.FirstOrDefault(i => i.Id == id);
 
-                if (item == null)
-                {
-                    return NotFound("Item não encontrado."); 
-                }
-
-                return Ok(item); 
+                if (item == null) return NotFound("Item não encontrado.");
+                var itemDTO = mapper.Map<ReadItemDTO>(item);
+                return Ok(itemDTO); 
             }
             catch (Exception ex)
             {

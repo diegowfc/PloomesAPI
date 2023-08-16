@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using AutoMapper;
 
 namespace StoreAPI
 {
@@ -49,7 +50,9 @@ namespace StoreAPI
                     };
                 });
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddNewtonsoftJson();
+
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddSwaggerGen(x =>
             {

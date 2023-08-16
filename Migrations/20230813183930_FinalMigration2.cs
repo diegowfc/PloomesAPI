@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace StoreAPI.Migrations
+namespace PloomesAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class TryingToFixSalt : Migration
+    public partial class FinalMigration2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

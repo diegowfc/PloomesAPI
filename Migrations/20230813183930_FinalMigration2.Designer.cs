@@ -9,11 +9,11 @@ using StoreAPI.Data;
 
 #nullable disable
 
-namespace StoreAPI.Migrations
+namespace PloomesAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230812194428_ChangeToUsernameLengthRule")]
-    partial class ChangeToUsernameLengthRule
+    [Migration("20230813183930_FinalMigration2")]
+    partial class FinalMigration2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,11 +71,12 @@ namespace StoreAPI.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Salt")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")

@@ -8,7 +8,7 @@ using StoreAPI.Data;
 
 #nullable disable
 
-namespace StoreAPI.Migrations
+namespace PloomesAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
     partial class DataContextModelSnapshot : ModelSnapshot

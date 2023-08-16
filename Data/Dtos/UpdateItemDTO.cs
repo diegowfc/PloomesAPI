@@ -1,20 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
-namespace StoreAPI.Model
+namespace PloomesAPI.Data.Dtos
 {
-    public class Item
+    public class UpdateItemDTO
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "O nome do item é obrigatório!")]
-        [MaxLength(100)]
+        [StringLength(100)]
         [DataType(DataType.Text)]
         public string Name { get; set; }
 
-        [MaxLength(200)]
+        [StringLength(200)]
         [DataType(DataType.Text)]
         [Required(ErrorMessage = "A descrição é obrigatória!")]
         public string Description { get; set; }

@@ -9,11 +9,11 @@ using StoreAPI.Data;
 
 #nullable disable
 
-namespace StoreAPI.Migrations
+namespace PloomesAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230812200702_ChangingPasswordRule")]
-    partial class ChangingPasswordRule
+    [Migration("20230813183508_FinalMigration")]
+    partial class FinalMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,7 +74,9 @@ namespace StoreAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Salt")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")

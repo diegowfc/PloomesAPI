@@ -62,7 +62,7 @@ namespace StoreAPI.Controllers
                 if (!ValidateItem(item))
                     return BadRequest("Falha no cadastro. Verifique as informações inseridas.");
 
-                context.Itens.Add(item);
+                context.Items.Add(item);
                 context.SaveChanges();
                 return Ok("Item cadastrado com sucesso.");
             }
@@ -85,7 +85,7 @@ namespace StoreAPI.Controllers
         {
             try
             {
-                var targetItem = context.Itens.FirstOrDefault(i => i.Id == id);
+                var targetItem = context.Items.FirstOrDefault(i => i.Id == id);
 
                 if (targetItem == null) return NotFound("Item não encontrado.");
 
@@ -116,7 +116,7 @@ namespace StoreAPI.Controllers
         {
             try
             {
-                var targetItem = context.Itens.FirstOrDefault(i => i.Id == id);
+                var targetItem = context.Items.FirstOrDefault(i => i.Id == id);
 
                 var itemToUpdate = mapper.Map<UpdateItemDTO>(targetItem);
 
@@ -146,12 +146,12 @@ namespace StoreAPI.Controllers
         {
             try
             {
-                var targetItem = context.Itens.FirstOrDefault(i => i.Id == id);
+                var targetItem = context.Items.FirstOrDefault(i => i.Id == id);
 
                 if (targetItem == null)
                     return NotFound("Item não encontrado.");
 
-                context.Itens.Remove(targetItem);
+                context.Items.Remove(targetItem);
                 context.SaveChanges();
 
                 return NoContent();
@@ -166,8 +166,8 @@ namespace StoreAPI.Controllers
         /// Método que retorna uma coleção de items salvos no banco.
         /// </summary>
         /// <param name="page">Número da página</param>
-        /// <param name="pageSize">Numero de itens retornados por página</param>
-        /// <returns>Retorna uma coleção de itens ou uma mensagem de erro.</returns>
+        /// <param name="pageSize">Numero de Items retornados por página</param>
+        /// <returns>Retorna uma coleção de Items ou uma mensagem de erro.</returns>
         [HttpGet]
         [Authorize]
         public ActionResult<IEnumerable<Item>> GetItems(int? page = null, int pageSize = 5)
@@ -182,7 +182,7 @@ namespace StoreAPI.Controllers
 
                 int currentPage = page ?? 1;
 
-                var items = mapper.Map<List<ReadItemDTO>>(context.Itens
+                var items = mapper.Map<List<ReadItemDTO>>(context.Items
                     .Skip((currentPage - 1) * pageSize)
                     .Take(pageSize)
                     .ToList());
@@ -206,7 +206,7 @@ namespace StoreAPI.Controllers
         {
             try
             {
-                var item = context.Itens.FirstOrDefault(i => i.Id == id);
+                var item = context.Items.FirstOrDefault(i => i.Id == id);
 
                 if (item == null) return NotFound("Item não encontrado.");
                 var itemDTO = mapper.Map<ReadItemDTO>(item);

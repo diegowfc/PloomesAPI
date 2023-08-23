@@ -12,8 +12,8 @@ using StoreAPI.Data;
 namespace PloomesAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230813183508_FinalMigration")]
-    partial class FinalMigration
+    [Migration("20230823195557_CreatingObjects")]
+    partial class CreatingObjects
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,23 @@ namespace PloomesAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("PloomesAPI.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AccountRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
 
             modelBuilder.Entity("StoreAPI.Model.Item", b =>
                 {
@@ -58,7 +75,7 @@ namespace PloomesAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Itens");
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("StoreAPI.Model.User", b =>

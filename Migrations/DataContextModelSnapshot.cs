@@ -22,6 +22,23 @@ namespace PloomesAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("PloomesAPI.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AccountRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("StoreAPI.Model.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -55,7 +72,7 @@ namespace PloomesAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Itens");
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("StoreAPI.Model.User", b =>

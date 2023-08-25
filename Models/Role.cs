@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using StoreAPI.Model;
 
 namespace PloomesAPI.Models
 {
@@ -11,5 +12,7 @@ namespace PloomesAPI.Models
 
         [Required(ErrorMessage = "O nome da função é obrigatório!")]
         public string AccountRole { get; set; }
+
+        public virtual ICollection<User>? User { get; set; }
     }
 }

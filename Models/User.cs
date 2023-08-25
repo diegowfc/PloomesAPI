@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PloomesAPI.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
@@ -19,8 +20,11 @@ namespace StoreAPI.Model
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        public string? Role { get; set; }
-
         public string? Salt { get; set; }
+
+        [Required]
+        public int RoleId { get; set; }
+
+        public virtual Role? Role { get; set; }
     }
 }

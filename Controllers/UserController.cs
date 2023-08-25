@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PloomesAPI.Data.Dtos;
 using PloomesAPI.Services;
 using StoreAPI.Data;
 using StoreAPI.Model;
@@ -17,11 +20,13 @@ namespace PloomesAPI.Controllers
     {
         private readonly DataContext context;
         private readonly IConfiguration configuration;
+        private IMapper _mapper;
 
-        public UserController(DataContext context, IConfiguration configuration)
+        public UserController(DataContext context, IConfiguration configuration, IMapper mapper)
         {
             this.context = context;
             this.configuration = configuration;
+            this._mapper = mapper;
         }
 
         /// <summary>
@@ -82,8 +87,7 @@ namespace PloomesAPI.Controllers
         {
             try
             {
-                var users = context.Users.ToList();
-
+                var users = _mapper.Map<List<ReadUserDTO>>(context.Users.ToList());
                 return Ok(users);
             }
             catch (Exception ex)
@@ -110,8 +114,6 @@ namespace PloomesAPI.Controllers
 
                 user.Password = Convert.ToBase64String(hashedPassword);
                 user.Salt = Convert.ToBase64String(salt);
-
-                if (user.Role == null) user.Role = "Usuário comum";
 
                 context.Users.Add(user);
                 context.SaveChanges();

@@ -109,8 +109,8 @@ namespace PloomesAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Salt")
                         .HasColumnType("nvarchar(max)");
@@ -121,6 +121,8 @@ namespace PloomesAPI.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -136,9 +138,25 @@ namespace PloomesAPI.Migrations
                     b.Navigation("ItemCategory");
                 });
 
+            modelBuilder.Entity("StoreAPI.Model.User", b =>
+                {
+                    b.HasOne("PloomesAPI.Models.Role", "Role")
+                        .WithMany("User")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("PloomesAPI.Models.ItemCategory", b =>
                 {
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("PloomesAPI.Models.Role", b =>
+                {
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

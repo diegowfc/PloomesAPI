@@ -22,9 +22,10 @@ namespace StoreAPI
             var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddUserSecrets<Program>() 
             .Build();
 
-            var key = Encoding.ASCII.GetBytes(configuration.GetSection("Settings:Key").Value);
+            var key = Encoding.ASCII.GetBytes(configuration["Settings:Key"]);
 
             var builder = WebApplication.CreateBuilder(args);
 

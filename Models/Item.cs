@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PloomesAPI.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StoreAPI.Model
@@ -19,10 +20,6 @@ namespace StoreAPI.Model
         [Required(ErrorMessage = "A descrição é obrigatória!")]
         public string Description { get; set; }
 
-        [Required(ErrorMessage = "O tipo do item é obrigatório!")]
-        [DataType(DataType.Text)]
-        public string Type { get; set; }
-
         [Required(ErrorMessage = "O valor do item é obrigatório!")]
         [DataType(DataType.Currency)]
         public float Value { get; set; }
@@ -33,5 +30,10 @@ namespace StoreAPI.Model
         [DataType(DataType.Currency)]
         [Required(ErrorMessage = "A quantidade em estoque é obrigatória!")]
         public int InventoryAmount { get; set; }
+
+        [Required]
+        public int ItemCategoryId { get; set; }
+
+        public virtual ItemCategory ItemCategory { get; set; }
     }
 }

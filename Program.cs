@@ -88,7 +88,7 @@ namespace StoreAPI
                 });
             });
 
-            builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer("name=ConnectionStrings:StoreAPIConnection"));
+            builder.Services.AddDbContext<DataContext>(options => options.UseLazyLoadingProxies().UseSqlServer("name=ConnectionStrings:StoreAPIConnection"));
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

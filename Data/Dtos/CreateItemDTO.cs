@@ -16,10 +16,6 @@ public class CreateItemDTO
     [Required(ErrorMessage = "A descrição é obrigatória!")]
     public string Description { get; set; }
 
-    [Required(ErrorMessage = "O tipo do item é obrigatório!")]
-    [DataType(DataType.Text)]
-    public string Type { get; set; }
-
     [Required(ErrorMessage = "O valor do item é obrigatório!")]
     [DataType(DataType.Currency)]
     public float Value { get; set; }
@@ -30,4 +26,7 @@ public class CreateItemDTO
     [DataType(DataType.Currency)]
     [Required(ErrorMessage = "A quantidade em estoque é obrigatória!")]
     public int InventoryAmount { get; set; }
+
+    [Required]
+    public int ItemCategoryId { get; set; }
 }

@@ -11,7 +11,7 @@ namespace PloomesAPI.Profiles
             CreateMap<CreateItemDTO, Item>();
             CreateMap<UpdateItemDTO, Item>();
             CreateMap<Item, UpdateItemDTO>();
-            CreateMap<Item, ReadItemDTO>();
+            CreateMap<Item, ReadItemDTO>().ForMember(itemDTO => itemDTO.Category, opt => opt.MapFrom(item => item.ItemCategory));
         }
     }
 }

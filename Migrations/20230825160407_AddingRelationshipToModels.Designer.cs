@@ -12,8 +12,8 @@ using StoreAPI.Data;
 namespace PloomesAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230823195557_CreatingObjects")]
-    partial class CreatingObjects
+    [Migration("20230825160407_AddingRelationshipToModels")]
+    partial class AddingRelationshipToModels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,9 +21,30 @@ namespace PloomesAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("PloomesAPI.Models.ItemCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ItemCategories");
+                });
 
             modelBuilder.Entity("PloomesAPI.Models.Role", b =>
                 {
@@ -61,19 +82,20 @@ namespace PloomesAPI.Migrations
                     b.Property<int>("InventoryAmount")
                         .HasColumnType("int");
 
+                    b.Property<int>("ItemCategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<float>("Value")
                         .HasColumnType("real");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ItemCategoryId");
 
                     b.ToTable("Items");
                 });
@@ -104,6 +126,22 @@ namespace PloomesAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("StoreAPI.Model.Item", b =>
+                {
+                    b.HasOne("PloomesAPI.Models.ItemCategory", "ItemCategory")
+                        .WithMany("Item")
+                        .HasForeignKey("ItemCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemCategory");
+                });
+
+            modelBuilder.Entity("PloomesAPI.Models.ItemCategory", b =>
+                {
+                    b.Navigation("Item");
                 });
 #pragma warning restore 612, 618
         }

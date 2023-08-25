@@ -36,7 +36,7 @@ namespace StoreAPI.Controllers
             if (item == null)
                 return false;
 
-            if (string.IsNullOrWhiteSpace(item.Name) || string.IsNullOrWhiteSpace(item.Type))
+            if (string.IsNullOrWhiteSpace(item.Name))
                 return false;
 
             if (item.Value <= 0)

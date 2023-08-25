@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using StoreAPI.Model;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PloomesAPI.Models
@@ -12,6 +13,8 @@ namespace PloomesAPI.Models
         [Required]
         [StringLength(100, ErrorMessage = "O nome do tipo do item deve ter pelo menos 2 caracteres", MinimumLength = 2)]
         public string Name { get; set; }
+
+        public virtual ICollection<Item>? Item { get; set; }
 
     }
 }

@@ -11,6 +11,20 @@ namespace StoreAPI.Data
            
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Role>()
+                .HasMany(role => role.User)
+                .WithOne(user => user.Role)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ItemCategory>()
+                .HasMany(ItemCategory => ItemCategory.Item)
+                .WithOne(item => item.ItemCategory)
+                .OnDelete(DeleteBehavior.Restrict);
+       
+        }
+
         public DbSet<Item> Items { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }

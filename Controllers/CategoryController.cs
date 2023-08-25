@@ -104,7 +104,7 @@ namespace PloomesAPI.Controllers
             if (category != null)
             {
                 ReadCategoryDTO categoryDTO = _mapper.Map<ReadCategoryDTO>(category);
-                return Ok(category);
+                return Ok(categoryDTO);
             }
             return NotFound();
         }

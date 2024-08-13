@@ -1,2 +1,2 @@
-# PloomesAPI
+# StoreAPI
 Minha ideia foi fazer uma API para controlar um inventário de itens de determinada loja. Ela tem um sistema de autorização, no qual administradores podem fazer todas as operações em relação a um item (Criar, deletar, atualizar informações, atualizar apenas a quantidade em estoque, etc) e usuários comuns conseguem ter apenas acesso de visualização. Porém, mesmo para visualizar, é necessário estar autenticado no sistema. Utilize JWT Token para fazer esse controle.
